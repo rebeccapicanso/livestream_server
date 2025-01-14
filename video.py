@@ -8,6 +8,7 @@ import time
 import io
 import threading
 
+
 stream = True
 static_url = "https://www.youtube.com/live/dqbPOGv3MrY?si=ALDRdRQj2FHJvj6Q"
 temp_stream = "temp_stream_yay.mp4"
@@ -19,10 +20,11 @@ class VideoStream:
     last_access = 0  # time of last client access to the camera
     path = None
 
-    def initialize(self, path: str):
-        if self.thread is None:
-            self.path = path
+    def __init__(self, path: str):
+        self.path = path
 
+    def initialize(self):
+        if self.thread is None:
             # start background frame thread
             self.thread = threading.Thread(target=self._thread)
             self.thread.start()
@@ -38,69 +40,62 @@ class VideoStream:
 
     @classmethod
     def _thread(cls):
-        cap = cv2.VideoCapture(cls.path)
+        while True:
+            cls.grab_livestream(static_url, temp_stream)
+            time.sleep(10)
+        # temp_stream = "temp_stream_yay.mp4"
+        # cap = cv2.VideoCapture(temp_stream)
         
-        # Check if video opened successfully
-        if not cap.isOpened():
-            print("Error: Could not open video file")
-            return
+        # # Check if video opened successfully
+        # if not cap.isOpened():
+        #     print(f"Error: Could not open video file: {cls.path}")
+        #     return
 
-        # Get video properties
-        frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-        frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        fps = int(cap.get(cv2.CAP_PROP_FPS))
-        total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+        # # Get video properties
+        # frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+        # frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+        # fps = int(cap.get(cv2.CAP_PROP_FPS))
+        # total_frames = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 
-        print(f"Video Properties:")
-        print(f"Dimensions: {frame_width}x{frame_height}")
-        print(f"FPS: {fps}")
-        print(f"Total Frames: {total_frames}")
+        # print(f"Video Properties:")
+        # print(f"Dimensions: {frame_width}x{frame_height}")
+        # print(f"FPS: {fps}")
+        # print(f"Total Frames: {total_frames}")
         
-        frame_count = 0
+        # frame_count = 0
         
-        # Read until video is completed
-        while cap.isOpened():
-            # Capture frame-by-frame
-            ret, frame = cap.read()
+        # stream = io.BytesIO()
+
+        # # Read until video is completed
+        # while cap.isOpened():
+        #     # Capture frame-by-frame
+        #     ret, frame = cap.read()
             
-            if ret:
-                frame_count += 1
+        #     if ret:
+        #         frame_count += 1
                 
-                # Here you can process the frame
-                # 'frame' is a numpy array in BGR format
+        #         # Here you can process the frame
+        #         # 'frame' is a numpy array in BGR format
                 
-                # Example: Display the frame
-                #cv2.imshow('Frame', frame)
+        #         # Example: Display the frame
+        #         #cv2.imshow('Frame', frame)
 
-                # store frame
-                stream.seek(0)
-                cls.frame = stream.read()
+        #         # store frame
+        #         stream.seek(0)
+        #         cls.frame = stream.read()
                 
-                # Press Q on keyboard to exit
-                if cv2.waitKey(25) & 0xFF == ord('q'):
-                    break
-            else:
-                break
+        #         # Press Q on keyboard to exit
+        #         if cv2.waitKey(25) & 0xFF == ord('q'):
+        #             break
+        #     else:
+        #         break
         
-        # Release everything when done
-        cap.release()
-        cv2.destroyAllWindows()
-        
-            for foo in camera.capture_continuous(stream, 'jpeg',
-                                                 use_video_port=True):
+        # # Release everything when done
+        # cap.release()
+        # cv2.destroyAllWindows()
+        # cls.thread = None
 
-                # reset stream for next frame
-                stream.seek(0)
-                stream.truncate()
-
-                # if there hasn't been any clients asking for frames in
-                # the last 10 seconds stop the thread
-                if time.time() - cls.last_access > 10:
-                    break
-        #cls.thread = None
-
-
-class Video:
+    @staticmethod
     def grab_livestream(static_url, temp_stream):
         try:
             ydl_json = {
@@ -120,9 +115,9 @@ class Video:
 if __name__ == "__main__":
     print("THIS PLAYED :-)")
     while stream is True:
-        video = grab_livestream(static_url, temp_stream)
-        print(video)
-        print("Playing video, LINE 29 🐑 🐑 🐑 🐑 🐑 🐑 🐑 ")
-        os.system(f"ffplay -i {video}")
+        # video = Video.grab_livestream(static_url, temp_stream)
+        # print(video)
+        # print("Playing video, LINE 29 🐑 🐑 🐑 🐑 🐑 🐑 🐑 ")
+        # os.system(f"ffplay -i {video}")
 
         break
