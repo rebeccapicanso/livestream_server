@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Stream</title>
+</head>
+<body>
+    <h1>Live Stream</h1>
+    <video id="videoPlayer" width="800" height="600" controls></video>
+    <script>
+        let chunkIndex = 0;
+        const videoPlayer = document.getElementById('videoPlayer');
+
+        function fetchNextChunk() {
+            fetch(`/video/${chunkIndex}`)
+                .then(response => {
+                    if (response.ok) {
+                        return response.blob();
+                    } else {
+                        throw new Error('Chunk not found');
+                    }
+                })
+                .then(blob => {
+                    const url = URL.createObjectURL(blob);
+                    const source = document.createElement('source');
+                    source.src = url;
+                    source.type = 'video/mp4';
+                    videoPlayer.appendChild(source);
+                    videoPlayer.load();
+                    videoPlayer.play();
+                    chunkIndex++;
+                    setTimeout(fetchNextChunk, 10000); // Fetch next chunk after 10 seconds
+                })
+                .catch(error => {
+                    console.error('Error fetching chunk:', error);
+                });
+        }
+
+        fetchNextChunk();
+    </script>
+</body>
+</html>
